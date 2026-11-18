@@ -4,17 +4,50 @@
     <setting id="username" type="text" label="User" default="" enable="false" />
     <setting id="api_url" type="text" label="API URL" default="https://api.wetrakr.com" />
     <setting id="api_token" type="text" label="API Token" default="" visible="false" />
+    <!-- Set to "true" by api.py when the server rejects the token (HTTP 401/403);
+         is_authenticated() then returns False so the service forces a re-login. -->
+    <setting id="auth_invalid" type="bool" label="Auth invalid" default="false" visible="false" />
+    <!-- Watched threshold set in WeTrakr (Settings > Kodi), from the webhook
+         response or /changes. Empty = not set there: scrobble_threshold applies. -->
+    <setting id="server_threshold" type="text" label="WeTrakr threshold" default="" visible="false" />
+    <setting type="action" label="Connect to WeTrakr" action="RunScript(script.wetrakr, login)" option="close" />
   </category>
 
   <category label="Scrobbling">
     <setting id="track_watched" type="bool" label="Mark as watched" default="true" />
     <setting id="track_playing" type="bool" label="Send 'now playing' event" default="true" />
-    <setting id="scrobble_threshold" type="number" label="Scrobble threshold (%)" default="80" />
+    <!-- Hidden since 1.3.8: the threshold is set in WeTrakr (Settings > Kodi).
+         Still sent with every event, so WeTrakr starts from each user's value. -->
+    <setting id="scrobble_threshold" type="number" label="Scrobble threshold (%)" default="80" visible="false" />
+    <setting id="scrobble_library_only" type="bool" label="Only scrobble Kodi library files (leave add-on streams to their own add-on)" default="false" />
+  </category>
+
+  <category label="Library sync">
+    <setting id="sync_enabled" type="bool" label="Sync the Kodi library with WeTrakr" default="true" />
+    <setting id="sync_upload" type="bool" label="Send watched, ratings and progress to WeTrakr" default="true" enable="eq(-1,true)" />
+    <setting id="sync_download" type="bool" label="Apply WeTrakr watched, ratings and progress to Kodi" default="true" enable="eq(-2,true)" />
+    <setting id="sync_watchlist_tag" type="bool" label="Tag Plan to Watch titles as 'WeTrakr Watchlist'" default="true" enable="eq(-3,true)" />
+    <setting id="sync_exclude_plugin" type="bool" label="Skip add-on sources (Jellyfin, Plex...)" default="true" enable="eq(-4,true)" />
+    <setting id="resume_from_wetrakr" type="bool" label="Resume add-on streams where WeTrakr left off" default="true" />
+    <setting type="action" label="Sync now" action="RunScript(script.wetrakr, sync)" option="close" enable="eq(-6,true)" />
+    <setting type="action" label="Reset sync state" action="RunScript(script.wetrakr, sync_reset)" option="close" enable="eq(-7,true)" />
+  </category>
+
+  <category label="Widgets">
+    <setting type="lsep" label="Add 'WeTrakr Scrobbler > Next Episodes' as a widget from your skin settings" />
+    <setting id="widget_library_only" type="bool" label="Next Episodes: only episodes in the Kodi library" default="false" />
+    <setting id="widget_tmdb_helper" type="bool" label="Play the other episodes with TMDb Helper" default="true" enable="eq(-1,false)" />
   </category>
 
   <category label="Rating">
     <setting id="rate_after_movie" type="bool" label="Rate Movie after watching" default="true" />
     <setting id="rate_after_episode" type="bool" label="Rate Episode after watching" default="false" />
+    <setting id="rating_half_steps" type="bool" label="Allow half-star ratings (e.g. 6.5)" default="false" />
+  </category>
+
+  <category label="Context menu">
+    <setting id="context_menu_enabled" type="bool" label="Show the WeTrakr entry in the context menu" default="true" />
+    <setting id="context_ask_date" type="bool" label="Ask for the date when marking watched or rating" default="true" enable="eq(-1,true)" />
   </category>
 
   <category label="Notifications">
